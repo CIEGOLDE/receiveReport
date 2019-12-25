@@ -1,0 +1,159 @@
+<mvc:View controllerName="cie.receiveReport.controller.report" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m"
+	xmlns:f="sap.ui.layout.form" xmlns:t="sap.ui.table" xmlns:html="http://www.w3.org/1999/xhtml">
+	<App id="app">
+		<pages>
+			<Page id="page" title="{i18n>title}">
+				<content>
+					<HBox height="6rem" >
+						<HBox width="1%"></HBox>
+						<HBox width="98%">
+							<!--<Panel width="100%">-->
+							<VBox width="100%">
+								<HBox width="98%" class="headerBox">
+									<VBox width="10%" justifyContent="Center">
+										<Text text="{i18n>labelPlant}" class="labelLeft" textAlign="End" width="100%"/>
+									</VBox>
+									<VBox width="8%">
+										<MultiInput id="Plant" type="Text" placeholder="" showSuggestion="true" showValueHelp="true" 
+										change="addToken" value="{/SearchCriteriaSet/Plant}" valueHelpRequest="onValueHelpRequest"></MultiInput>
+									</VBox>
+									<VBox width="10%" justifyContent="Center">
+										<Text text="{i18n>labelPONo}" class="labelLeft" textAlign="End" width="100%"/>
+									</VBox>
+									<VBox width="12%">
+										<MultiInput id="PONo" type="Text" placeholder="" showSuggestion="true" showValueHelp="true" 
+										change="addToken" value="{/SearchCriteriaSet/PONo}" valueHelpRequest="onValueHelpRequest"></MultiInput>
+									</VBox>
+									<VBox width="12%" justifyContent="Center">
+										<Text text="{i18n>labelSupplier}" class="labelLeft" textAlign="End" width="100%"/>
+									</VBox>
+									<VBox width="12%">
+										<MultiInput id="Supplier" type="Text" placeholder="" showSuggestion="true" showValueHelp="true"
+										change="addToken" value="{/SearchCriteriaSet/Supplier}" valueHelpRequest="onValueHelpRequest"></MultiInput>
+									</VBox>
+									<VBox width="12%" justifyContent="Center">
+										<Text text="{i18n>labelReceiveDate}" class="labelLeft" textAlign="End" width="100%"/>
+									</VBox>
+									<VBox width="17%">
+										<DateRangeSelection id="ReceiveDate" displayFormat="yyyy-MM-dd" placeholder=" "
+										dateValue="{/SearchCriteriaSet/dateFrom}" secondDateValue="{/SearchCriteriaSet/dateTo}" />
+									</VBox>
+									<VBox width="1%" justifyContent="Center"/>
+									<HBox width="3%" justifyContent="End">
+										<Button text="{i18n>Go}" press="onSearch"/>
+									</HBox>
+								</HBox>
+							</VBox>
+							<!--</Panel>-->
+						</HBox>
+						<HBox width="1%"></HBox>
+					</HBox>
+					
+					<VBox width="100%" class="mainTable">
+						<OverflowToolbar>
+								<content>
+								<Title id="title" text="{i18n>tableHeader}" />
+								<ToolbarSpacer/>									
+								<Button id="btnPrint" type="Transparent" icon="sap-icon://print" text="{i18n>btnPrint}" enabled="false" press="onPrint"/>
+							</content>
+						</OverflowToolbar>
+						<ScrollContainer  width="100%" horizontal="true" vertical="true" focusable="true">
+						<Table id="table"
+							inset="false"
+							sticky="ColumnHeaders"
+							mode="MultiSelect"
+							growing="true"
+							growingThreshold="20"
+							items="{
+								path: '/poTableSet',
+								sorter: {
+									path: 'PurchaseOrder'
+								}
+							}">
+							<columns>
+								<Column hAlign="Left">
+									<Text text="{i18n>colPO}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colItem}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colMatDoc}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colMatDocItem}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colSupplier}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colSupplierDesc}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colPlant}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colMaterial}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colMaterialDesc}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colReceiveDate}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colOrderQty}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colReceiveQty}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colUnit}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colUnitPrice}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colExtPrice}" />
+								</Column>
+								<Column hAlign="Left">
+									<Text text="{i18n>colCurrency}" />
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem type="Active"
+								press="handleTableClicked" >
+									<cells>
+										<Text text="{PurchaseOrder}" wrapping="false" tooltip="{PurchaseOrder}"/>
+										<Text text="{PurchaseOrderItem}" wrapping="false" tooltip="{PurchaseOrderItem}"/>
+										<Text text="{MaterialDocument}" wrapping="false" tooltip="{PurchasingHistoryDocument}"/>
+										<Text text="{MaterialDocumentItem}" wrapping="false" tooltip="{PurchasingHistoryDocumentItem}"/>
+										<Text text="{Supplier}" wrapping="false" tooltip="{Supplier}" />
+										<Text text="{path: 'SupplierFullName', formatter: '.formatter.splitDesc'}" wrapping="false" 
+										tooltip="{path: 'SupplierFullName', formatter: '.formatter.splitDesc'}" />
+										<Text text="{Plant}" wrapping="false"/>
+										<Text text="{Material}" wrapping="false"/>
+										<Text text="{PurchaseOrderItemText}" wrapping="false" tooltip="{PurchaseOrderItemText}"/>
+										<Text text="{path: 'DocumentDate', formatter: '.formatter.splitDate'}" wrapping="false" 
+										tooltip="{{path: 'DocumentDate', formatter: '.formatter.splitDate'}}"/>
+										<Text text="{OrderQuantity}" wrapping="false"/>
+										<Text text="{QuantityInEntryUnit}" wrapping="false"/>
+										<Text text="{PurchaseOrderQuantityUnit}" wrapping="false" tooltip="{PurchaseOrderQuantityUnit}"/>
+										<Text text="{parts: [
+															{path: 'NetAmount'},
+															{path: 'OrderQuantity'}
+														],
+														formatter : '.formatter.divide'}" wrapping="false"/>
+										<Text text="{NetAmount}" wrapping="false"/>
+										<Text text="{DocumentCurrency}" wrapping="false"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+						</ScrollContainer>
+					</VBox>
+				</content>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>

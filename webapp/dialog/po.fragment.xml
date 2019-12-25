@@ -1,0 +1,25 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<TableSelectDialog id="PODialog" noDataText="No Value Found " title="{i18n>poTitle}" multiSelect="true" confirm="onHandleClose" liveChange="onliveChang" cancel="onhandleClose2"
+ 		items="{ path : '/poSet', sorter : { path : 'PurchaseOrder', descending : true } }"  
+ 		search="handleSearch">
+			<ColumnListItem>
+			<cells>		
+				<Text text="{PurchaseOrder}"/> 
+				<Text text="{PurchaseOrderDate}"/> 
+			</cells>
+		</ColumnListItem>
+		<columns>
+			<Column >
+				<header>
+					<Text text="{i18n>po}"/>
+				</header>
+			</Column>
+			<Column >
+				<header>
+					<Text text="{i18n>poDate}"/>
+				</header>
+			</Column>
+		</columns>
+		
+	</TableSelectDialog>
+</core:FragmentDefinition>

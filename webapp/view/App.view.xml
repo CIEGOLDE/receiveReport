@@ -1,0 +1,4 @@
+<mvc:View controllerName="cie.receiveReport.controller.App" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" 
+           busy="{/appProperties/busy}" busyIndicatorDelay="0" xmlns="sap.m">
+	   <App id="appNavContainer"/>
+</mvc:View>
