@@ -494,6 +494,7 @@ sap.ui.define([
 				success: function (data, textStatus, jqXHR) {
 					var result = data.base64PDF;
 					// that.byId("table").clearSelection();
+					that.byId("table").removeSelections();
 					that.pdfPreview(result);	
 				},
 				error: function (xhr, status) {
@@ -562,5 +563,9 @@ sap.ui.define([
 			}
 			return aXML;
 		},
+		handleTableClicked: function(oEvent){
+			var oItem = oEvent.getSource();
+			oItem.attachSelect();
+		}
 	});
 });
