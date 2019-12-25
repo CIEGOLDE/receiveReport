@@ -3,7 +3,7 @@
 	<App id="app">
 		<pages>
 			<Page id="page" title="{i18n>title}">
-				<content>
+				<content height="100%">
 					<HBox height="6rem" >
 						<HBox width="1%"></HBox>
 						<HBox width="98%">
@@ -57,9 +57,10 @@
 								<Button id="btnPrint" type="Transparent" icon="sap-icon://print" text="{i18n>btnPrint}" enabled="false" press="onPrint"/>
 							</content>
 						</OverflowToolbar>
-						<ScrollContainer  width="100%" horizontal="true" vertical="true" focusable="true">
+						<ScrollContainer  width="100%" height="30rem" horizontal="true" vertical="true" focusable="true">
 						<Table id="table"
 							inset="false"
+							width="2000px"
 							sticky="ColumnHeaders"
 							mode="MultiSelect"
 							growing="true"
@@ -124,28 +125,28 @@
 								<ColumnListItem type="Active"
 								press="handleTableClicked" >
 									<cells>
-										<Text text="{PurchaseOrder}" wrapping="false" tooltip="{PurchaseOrder}"/>
-										<Text text="{PurchaseOrderItem}" wrapping="false" tooltip="{PurchaseOrderItem}"/>
-										<Text text="{MaterialDocument}" wrapping="false" tooltip="{PurchasingHistoryDocument}"/>
-										<Text text="{MaterialDocumentItem}" wrapping="false" tooltip="{PurchasingHistoryDocumentItem}"/>
-										<Text text="{Supplier}" wrapping="false" tooltip="{Supplier}" />
-										<Text text="{path: 'SupplierFullName', formatter: '.formatter.splitDesc'}" wrapping="false" 
+										<Text text="{PurchaseOrder}" tooltip="{PurchaseOrder}"/>
+										<Text text="{PurchaseOrderItem}" tooltip="{PurchaseOrderItem}"/>
+										<Text text="{MaterialDocument}" tooltip="{PurchasingHistoryDocument}"/>
+										<Text text="{MaterialDocumentItem}" tooltip="{PurchasingHistoryDocumentItem}"/>
+										<Text text="{Supplier}" tooltip="{Supplier}" />
+										<Text text="{path: 'SupplierFullName', formatter: '.formatter.splitDesc'}"  
 										tooltip="{path: 'SupplierFullName', formatter: '.formatter.splitDesc'}" />
-										<Text text="{Plant}" wrapping="false"/>
-										<Text text="{Material}" wrapping="false"/>
-										<Text text="{PurchaseOrderItemText}" wrapping="false" tooltip="{PurchaseOrderItemText}"/>
-										<Text text="{path: 'DocumentDate', formatter: '.formatter.splitDate'}" wrapping="false" 
+										<Text text="{Plant}" />
+										<Text text="{Material}" tooltip="{Material}"/>
+										<Text text="{PurchaseOrderItemText}" tooltip="{PurchaseOrderItemText}"/>
+										<Text text="{path: 'DocumentDate', formatter: '.formatter.splitDate'}"
 										tooltip="{{path: 'DocumentDate', formatter: '.formatter.splitDate'}}"/>
-										<Text text="{OrderQuantity}" wrapping="false"/>
-										<Text text="{QuantityInEntryUnit}" wrapping="false"/>
-										<Text text="{PurchaseOrderQuantityUnit}" wrapping="false" tooltip="{PurchaseOrderQuantityUnit}"/>
+										<Text text="{OrderQuantity}"/>
+										<Text text="{QuantityInEntryUnit}" />
+										<Text text="{PurchaseOrderQuantityUnit}" tooltip="{PurchaseOrderQuantityUnit}"/>
 										<Text text="{parts: [
 															{path: 'NetAmount'},
 															{path: 'OrderQuantity'}
 														],
-														formatter : '.formatter.divide'}" wrapping="false"/>
-										<Text text="{NetAmount}" wrapping="false"/>
-										<Text text="{DocumentCurrency}" wrapping="false"/>
+														formatter : '.formatter.divide'}" />
+										<Text text="{NetAmount}" />
+										<Text text="{DocumentCurrency}"/>
 									</cells>
 								</ColumnListItem>
 							</items>
