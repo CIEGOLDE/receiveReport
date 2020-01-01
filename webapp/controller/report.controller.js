@@ -15,6 +15,7 @@ sap.ui.define([
 		onInit: function () {
 			this.getView().addStyleClass("sapUiSizeCompact");			
 			this._JSONModel = this.getModel();
+			this._ResourceBundle = this.getModel("i18n").getResourceBundle();
 			this.language = this.getLanguage().split("-")[0];
 			this.initValueHelpDataSet();
 			this.calltempleate();
@@ -26,7 +27,6 @@ sap.ui.define([
 		 	this._JSONModel.setProperty("/poSet",null);
 		 	this._JSONModel.setProperty("/plantSet",null);
 		 	this._JSONModel.setProperty("/supplierSet",null);
-	
 			this.byId("Plant").addValidator(function(args){
 					var text = args.text;
 					return new Token({key: text, text: text});
@@ -40,6 +40,10 @@ sap.ui.define([
 					return new Token({key: text, text: text});
 			});
 		 },
+		// addToken: function(args){
+		// 		var text = args.getSource().getProperty("value");
+		// 		return new Token({key: text, text: text});
+		// },
 		 onSearch: function(){
 		 	var that = this;
 			that.byId("table").setBusy(true);
@@ -49,8 +53,11 @@ sap.ui.define([
 			var plantTokens = this.byId("Plant").getTokens();
 			var poTokens = this.byId("PONo").getTokens();
 			var supplierTokens = this.byId("Supplier").getTokens();
-			var searchCriteriaSet= this._JSONModel.getProperty("/searchCriteriaSet");
+			// var searchCriteriaSet= this._JSONModel.getProperty("/searchCriteriaSet");
+			var dateFrom = this.byId("ReceiveDate").getProperty("dateValue");      
+			var dateTo = this.byId("ReceiveDate").getProperty("secondDateValue"); 
 			var allFilters = [];
+			var mvcFilter = [];
 			
 		 	if(plantTokens.length > 0){
 				for(var p = 0; p < plantTokens.length; p++){
@@ -80,15 +87,27 @@ sap.ui.define([
 				}
 			}
 			allFilters.push(new Filter({
+				path:"PurchasingHistoryCategory",
+				operator: FilterOperator.EQ,
+				value1: 'E'
+			}));
+			mvcFilter.push(new Filter({
 				path:"GoodsMovementType",
 				operator: FilterOperator.EQ,
 				value1: '101'
 			}));
-			if(searchCriteriaSet.dateFrom !== null){
-				var time1 = searchCriteriaSet.dateFrom.getTime()+28800000;//加8小时
-				var time2 = searchCriteriaSet.dateTo.getTime()+28800000;//加8小时
+			mvcFilter.push(new Filter({
+				path:"GoodsMovementType",
+				operator: FilterOperator.EQ,
+				value1: '102'
+			}));
+			var orFilter = new Filter(mvcFilter, false); 
+			allFilters.push(orFilter);
+			if(dateFrom !== null){
+				var time1 = dateFrom.getTime()+28800000;//加8小时
+				var time2 = dateTo.getTime()+28800000;//加8小时
 				allFilters.push(new Filter({
-					path:"MfgOrderPlannedStartDate",
+					path:"DocumentDate",
 					operator: FilterOperator.BT,
 					value1: this.dateTostr(new Date(time1)),
 					value2: this.dateTostr(new Date(time2))
@@ -103,7 +122,7 @@ sap.ui.define([
 				urlParameters: mUrlParameter,
 				success: function (oData) {
 					that.byId("table").setBusy(false);
-					var Arry  = oData.results;
+					var Arry  = that.processResult(oData.results);
 					if (Arry.length>0) {
 						that._JSONModel.setProperty("/poTableSet",Arry);
 					}else{
@@ -210,7 +229,9 @@ sap.ui.define([
 						
 					jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oPlantDialog);
 					this._oPlantDialog.open();
-					sap.ui.getCore().byId("PlantDialog").setBusy(true);
+					if(this._JSONModel.getProperty("/plantSet")===null){
+						sap.ui.getCore().byId("PlantDialog").setBusy(true);
+					}
 					break;
 				case "PONo":
 					this.theTokenInput= this.getView().byId("PONo");
@@ -226,7 +247,9 @@ sap.ui.define([
 						
 					jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oPODialog);
 					this._oPODialog.open();
-					sap.ui.getCore().byId("PODialog").setBusy(true);
+					if(this._JSONModel.getProperty("/poSet")===null){
+						sap.ui.getCore().byId("PODialog").setBusy(true);
+					}
 					break;
 				case "Supplier":
 					this.theTokenInput= this.getView().byId("Supplier");
@@ -242,7 +265,9 @@ sap.ui.define([
 						
 					jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this._oSupplierDialog);
 					this._oSupplierDialog.open();
-					sap.ui.getCore().byId("SupplierDialog").setBusy(true);
+					if(this._JSONModel.getProperty("/supplierSet")===null){
+						sap.ui.getCore().byId("SupplierDialog").setBusy(true);
+					}
 					break;
 				default:
 					break;
@@ -381,28 +406,29 @@ sap.ui.define([
 	    	});
 			if(selectIndexArry.length<1){
 				sap.m.MessageBox.warning(this._ResourceBundle.getText("errMsg1"), {
-					title: this._ResourceBundle.getText("Tips")
+					title: this._ResourceBundle.getText("errBox")
 				});
 				this.byId("page").setBusy(false);
 				return;
 			}
 			var printArr = [];
 			var that = this;
-			if (selectIndexArry.length > 10) {
+			var distinctArr = this.distinctPO(selectIndexArry);
+			if (distinctArr.length > 10) {
 				sap.m.MessageBox.warning(this._ResourceBundle.getText("errMsg2"), {
-					title: this._ResourceBundle.getText("Tips")
+					title: this._ResourceBundle.getText("errBox")
 				});
 				this.byId("page").setBusy(false);
 				return;
 			}
-			for(var i=0;i<selectIndexArry.length;i++){
-				for(var j=0;j<poTableSet.length;j++){
-					if(poTableSet[j].PurchaseOrder===selectIndexArry[i].PurchaseOrder){
-						printArr.push(poTableSet[j]);
-					}
-				}
-			}
-			var aXML = that.processXML(printArr, that);
+			// for(var i=0;i<selectIndexArry.length;i++){
+			// 	for(var j=0;j<poTableSet.length;j++){
+			// 		if(poTableSet[j].ID===selectIndexArry[i].ID){
+			// 			printArr.push(poTableSet[j]);
+			// 		}
+			// 	}
+			// }
+			var aXML = that.processXML(selectIndexArry, that);
 			that._JSONModel.setProperty("/printTotal",aXML.length);
 			that._JSONModel.setProperty("/b64Set", []);
 			that._JSONModel.setProperty("/printError", false);
@@ -532,11 +558,9 @@ sap.ui.define([
 			var aXML = [];
 			var xml = "";
 			var item = "";
-			var price =0;
+			var amount =0;
 			for (var i = 0; i < aDoc.length; i++) {
-				if(aDoc[i].OrderQuantity!==0&&aDoc[i].OrderQuantity!==""){
-					price = (aDoc[i].NetAmount/aDoc[i].OrderQuantity).toFixed(4);                         
-				}
+				amount = aDoc[i].NetPriceAmount*aDoc[i].QuantityInEntryUnit;                       
 				item = item + "<Items><PurchaseDocument>" + aDoc[i].PurchaseOrder + "</PurchaseDocument>";
 				item = item + "<PurchaseDocumentItem>" + aDoc[i].PurchaseOrderItem + "</PurchaseDocumentItem>";
 				item = item + "<SupplierDesc>" + aDoc[i].SupplierFullName.split("/")[0] + "</SupplierDesc>";
@@ -546,16 +570,18 @@ sap.ui.define([
 				item = item + "<Ordered>" + aDoc[i].OrderQuantity + "</Ordered>";
 				item = item + "<Received>" + aDoc[i].QuantityInEntryUnit + "</Received>";
 				item = item + "<Unit>" + aDoc[i].PurchaseOrderQuantityUnit + "</Unit>";
-				item = item + "<UnitPrice>" + price + "</UnitPrice>";
-				item = item + "<ExtPrice>" + aDoc[i].NetAmount + "</ExtPrice>";
+				item = item + "<UnitPrice>" + aDoc[i].NetPriceAmount + "</UnitPrice>";
+				item = item + "<ExtPrice>" + amount + "</ExtPrice>";
 				item = item + "<Currency>" + aDoc[i].DocumentCurrency + "</Currency></Items>";
 				if(aDoc[i + 1] === undefined){
 					xml="<?xml version=\"1.0\" encoding=\"UTF-8\"?><Form><PurchaseDocumentNode>";
+					xml=xml+"<CompanyCode>"+aDoc[i].CompanyCode+"</CompanyCode>";
 					xml = xml+item+"</PurchaseDocumentNode></Form>";
 					aXML.push(xml);
 					item = "";
 				}else if(aDoc[i].PurchaseOrder !== aDoc[i + 1].PurchaseOrder){
 					xml="<?xml version=\"1.0\" encoding=\"UTF-8\"?><Form><PurchaseDocumentNode>";
+					xml=xml+"<CompanyCode>"+aDoc[i].CompanyCode+"</CompanyCode>";
 					xml = xml+item+"</PurchaseDocumentNode></Form>";
 					aXML.push(xml);
 					item = "";
@@ -565,7 +591,60 @@ sap.ui.define([
 		},
 		handleTableClicked: function(oEvent){
 			var oItem = oEvent.getSource();
-			oItem.attachSelect();
+			if(oItem.getSelected()){
+				oItem.setSelected(false);
+			}else{
+				oItem.setSelected(true);
+			}
+		},
+		distinctPO: function (arr) {
+			var obj = {};
+			var result = [];
+			for (var i = 0; i < arr.length; i++) {
+				if (obj[arr[i].PurchaseOrder]===undefined) {
+					result.push(arr[i]);
+					obj[arr[i].PurchaseOrder] = 1;
+				}
+			}
+			return result;
+		},
+		processResult: function(arr){
+			var removeArr = [];
+			var resultArr = [];
+			var remove = false;
+			for (var i = 0; i < arr.length; i++) {
+				if(arr[i].GoodsMovementType ==="102"){
+					removeArr.push({
+						PurchaseOrder: arr[i].PurchaseOrder,
+						PurchaseOrderItem: arr[i].PurchaseOrderItem,
+						MaterialDocument: arr[i].MaterialDocument,
+						MaterialDocumentItem: arr[i].MaterialDocumentItem,
+						MaterialDocumentYear: arr[i].MaterialDocumentYear
+					});
+					removeArr.push({
+						PurchaseOrder: arr[i].PurchaseOrder,
+						PurchaseOrderItem: arr[i].PurchaseOrderItem,
+						MaterialDocument: arr[i].ReferenceDocument,
+						MaterialDocumentItem: arr[i].ReferenceDocumentItem,
+						MaterialDocumentYear: arr[i].ReferenceDocumentFiscalYear
+					});
+				}
+			}
+			for (var j = 0; j < arr.length; j++) {
+				remove = false;
+				for (var k = 0; k < removeArr.length; k++) {
+					if(arr[j].PurchaseOrder===removeArr[k].PurchaseOrder&&arr[j].PurchaseOrderItem===removeArr[k].PurchaseOrderItem 
+					 &&arr[j].MaterialDocument===removeArr[k].MaterialDocument&&arr[j].MaterialDocumentItem===removeArr[k].MaterialDocumentItem
+					 &&arr[j].MaterialDocumentYear===removeArr[k].MaterialDocumentYear){
+						remove = true;
+						break;
+					}
+				}
+				if(!remove){
+					resultArr.push(arr[j]);
+				}
+			}
+			return resultArr;
 		}
 	});
 });

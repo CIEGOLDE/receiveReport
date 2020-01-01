@@ -22,7 +22,9 @@ sap.ui.define([
 			}else{
 				return 0;
 			}
-			
+		},
+		times: function(price, qty){
+			return price*qty;
 		}
 	};
 	

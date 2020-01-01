@@ -15,28 +15,28 @@
 									</VBox>
 									<VBox width="8%">
 										<MultiInput id="Plant" type="Text" placeholder="" showSuggestion="true" showValueHelp="true" 
-										change="addToken" value="{/SearchCriteriaSet/Plant}" valueHelpRequest="onValueHelpRequest"></MultiInput>
+										change="addToken" valueHelpRequest="onValueHelpRequest"></MultiInput>
 									</VBox>
 									<VBox width="10%" justifyContent="Center">
 										<Text text="{i18n>labelPONo}" class="labelLeft" textAlign="End" width="100%"/>
 									</VBox>
 									<VBox width="12%">
 										<MultiInput id="PONo" type="Text" placeholder="" showSuggestion="true" showValueHelp="true" 
-										change="addToken" value="{/SearchCriteriaSet/PONo}" valueHelpRequest="onValueHelpRequest"></MultiInput>
+										change="addToken" valueHelpRequest="onValueHelpRequest"></MultiInput>
 									</VBox>
 									<VBox width="12%" justifyContent="Center">
 										<Text text="{i18n>labelSupplier}" class="labelLeft" textAlign="End" width="100%"/>
 									</VBox>
 									<VBox width="12%">
 										<MultiInput id="Supplier" type="Text" placeholder="" showSuggestion="true" showValueHelp="true"
-										change="addToken" value="{/SearchCriteriaSet/Supplier}" valueHelpRequest="onValueHelpRequest"></MultiInput>
+										change="addToken" valueHelpRequest="onValueHelpRequest"></MultiInput>
 									</VBox>
 									<VBox width="12%" justifyContent="Center">
 										<Text text="{i18n>labelReceiveDate}" class="labelLeft" textAlign="End" width="100%"/>
 									</VBox>
 									<VBox width="17%">
-										<DateRangeSelection id="ReceiveDate" displayFormat="yyyy-MM-dd" placeholder=" "
-										dateValue="{/SearchCriteriaSet/dateFrom}" secondDateValue="{/SearchCriteriaSet/dateTo}" />
+										<DateRangeSelection id="ReceiveDate" displayFormat="yyyy-MM-dd" placeholder=" " />
+										<!--dateValue="{/SearchCriteriaSet/dateFrom}" secondDateValue="{/SearchCriteriaSet/dateTo}" />-->
 									</VBox>
 									<VBox width="1%" justifyContent="Center"/>
 									<HBox width="3%" justifyContent="End">
@@ -140,12 +140,12 @@
 										<Text text="{OrderQuantity}"/>
 										<Text text="{QuantityInEntryUnit}" />
 										<Text text="{PurchaseOrderQuantityUnit}" tooltip="{PurchaseOrderQuantityUnit}"/>
+										<Text text="{NetPriceAmount}" />
 										<Text text="{parts: [
-															{path: 'NetAmount'},
-															{path: 'OrderQuantity'}
+															{path: 'NetPriceAmount'},
+															{path: 'QuantityInEntryUnit'}
 														],
-														formatter : '.formatter.divide'}" />
-										<Text text="{NetAmount}" />
+														formatter : '.formatter.times'}" />
 										<Text text="{DocumentCurrency}"/>
 									</cells>
 								</ColumnListItem>
